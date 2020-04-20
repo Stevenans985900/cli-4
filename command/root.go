@@ -219,3 +219,26 @@ func determineBaseRepo(cmd *cobra.Command, ctx context.Context) (ghrepo.Interfac
 
 	return baseRepo, nil
 }
+
+func formatCloneURL(cmd *cobra.Command, fullRepoName string) string {
+	ctx := contextForCommand(cmd)
+
+	protocol := "https"
+	cfg, err := ctx.Config()
+	if err != nil {
+		fmt.Fprintf(colorableErr(cmd), "failed to load config: %w. using defaults", err)
+	} else {
+		cfgProtocol, err := cfg.Get(defaultHostname, "git_protocol")
+		if err != nil {
+			fmt.Fprintf(colorableErr(cmd), "failed to read config: %w. using defaults", err)
+		} else {
+			protocol = cfgProtocol
+		}
+	}
+
+	if protocol == "ssh" {
+		return fmt.Sprintf("git@%s:%s.git", defaultHostname, fullRepoName)
+	}
+
+	return fmt.Sprintf("https://%s/%s.git", defaultHostname, fullRepoName)
+}
