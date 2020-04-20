@@ -127,6 +127,7 @@ func runClone(cloneURL string, args []string) (target string, err error) {
 func repoClone(cmd *cobra.Command, args []string) error {
 	cloneURL := args[0]
 	if !strings.Contains(cloneURL, ":") {
+		// TODO protocol aware?
 		cloneURL = fmt.Sprintf("https://github.com/%s.git", cloneURL)
 	}
 
